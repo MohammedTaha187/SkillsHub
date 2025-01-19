@@ -2,27 +2,25 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Laravel\Fortify\Fortify;
 use App\Actions\Fortify\CreateNewUser;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Cache\RateLimiting\Limit;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
-use Illuminate\Support\Facades\RateLimiter;
 use App\Actions\Fortify\UpdateUserProfileInformation;
-
-
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.   
+     * Register any application services.
      */
     public function register(): void
     {
-        
+        //
     }
 
     /**
@@ -45,14 +43,13 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
-        fortify::loginView(function() {
+        fortify::loginView(function(){
             return view('auth.login');
-        });
 
-        fortify::registerView(function() {
+        });
+        fortify::registerView(function(){
             return view('auth.register');
-        });
 
-      
+        });
     }
 }
