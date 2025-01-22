@@ -7,7 +7,7 @@ use App\Http\Controllers\SkillController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\web\HomeController;
 use App\Http\Controllers\web\LangController;
-
+use App\Http\Controllers\admin\CatController as AdminCatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +28,17 @@ Route::middleware(['lang' , 'auth'])->group(function () {
 
     Route::get('/messages' , [MessageController::class,'index']);
     Route::post('/messages/send' , [MessageController::class,'send']);
+
+
+    //admin categories
+    Route::prefix('dashboard/')->middleware(['auth', 'isAdmin'])->group(function () {
+        Route::get('categories', [AdminCatController::class, 'index']);
+        Route::get('categories/create', [AdminCatController::class, 'create']);
+        Route::post('categories/store', [AdminCatController::class, 'store']);
+        Route::get('categories/edit/{id}', [AdminCatController::class, 'edit']);
+        Route::post('categories/update/{id}', [AdminCatController::class, 'update']);
+        Route::get('categories/delete/{id}', [AdminCatController::class, 'delete']);
+    });
    
 });
 
