@@ -100,11 +100,11 @@
 
     <div class="login-container">
         <h1>Login to Your Account</h1>
-        <form accept="{{ route("login") }}" method="POST">
+        <form action="{{ route('login') }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label for="email" class="form-label">Email Address</label>
-                <input type="email" value="{{ old("email") }}" class="form-control" id="email" name="email"
+                <input type="email" value="{{ old('email') }}" class="form-control" id="email" name="email"
                     placeholder="Enter your email" required>
                 @error("email")
                     <span class="input-error">{{ $message }}</span>
@@ -118,11 +118,20 @@
                     <span class="input-error">{{ $message }}</span>
                 @enderror
             </div>
+
+            <!-- Remember Me -->
+            <div class="mb-3">
+                <label for="remember" class="form-check-label">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                    Remember Me
+                </label>
+            </div>
+
             <button type="submit" class="btn btn-login">Login</button>
             <a href="#" class="forgot-password">Forgot your password?</a>
         </form>
         <p class="text-muted">
-            Don't have an account? <a href="{{ url("register") }}">Sign Up</a>
+            Don't have an account? <a href="{{ url('register') }}">Sign Up</a>
         </p>
     </div>
 

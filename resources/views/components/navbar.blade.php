@@ -12,8 +12,21 @@
             </ul>
         </li>
         <li><a href="{{ url("/messages") }}">{{ __("lang.contact") }} </a></li>
-        <li><a href="login.html">{{ __("lang.login") }} </a></li>
-        <li><a href="register.html">{{ __("lang.register") }} </a></li>
+        @guest
+            <li><a href="{{ '/login' }}">{{ __("lang.login") }} </a></li>
+        <li><a href="{{ '/register' }}">{{ __("lang.register") }} </a></li>
+        @endguest
+        
+      @auth
+         <form id="logout-form" action="{{ url('/logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-danger">{{ __("lang.logout") }}</button>
+        </form> 
+      @endauth
+        
+            
+        
+        
         <li><a href="{{ url("lang/set/ar") }}">ع </a></li>
         <li><a href="{{ url("lang/set/en") }}">EN </a></li>
     </ul>
