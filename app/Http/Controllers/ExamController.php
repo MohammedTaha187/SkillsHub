@@ -42,6 +42,26 @@ class ExamController extends Controller
         return view('web.exams.index')->with($data);
     }
 
+
+    public function questions($id)
+    {
+        $exam = Exam::findOrFail($id);
+        $questions = $exam->questions;
+    
+       
+        foreach ($questions as $question) {
+            $question->title = json_decode($question->title);
+            $question->option_1 = json_decode($question->option_1);
+            $question->option_2 = json_decode($question->option_2);
+            $question->option_3 = json_decode($question->option_3);
+            $question->option_4 = json_decode($question->option_4);
+        }
+    
+        return view('web.exams.questions', compact('exam', 'questions'));
+    }
+    
+
+
     /**
      * Show the form for editing the specified resource.
      */

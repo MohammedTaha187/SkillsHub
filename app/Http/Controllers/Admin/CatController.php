@@ -18,8 +18,9 @@ class CatController extends Controller
             $cat->name = json_decode($cat->name);
             return $cat;
         });
-        return view('admin.index', [
-            'cat' => $cats
+        return view('admin.cats.index', [
+            'cat' => $cats,
+            'skill' =>[]
         ]);
     }
 
@@ -29,7 +30,7 @@ class CatController extends Controller
      */
     public function create()
     {
-        return view('admin.create');
+        return view('admin.cats.create');
 
     }
 
@@ -68,7 +69,7 @@ class CatController extends Controller
     {
         $cat = Cat::findOrFail($id);
         $cat->name = json_decode($cat->name);
-        return view('admin.edit', ['cat' => $cat]);
+        return view('admin.cats.edit', ['cat' => $cat]);
     }
 
     /**

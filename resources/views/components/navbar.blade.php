@@ -20,8 +20,8 @@
       @auth
          <form id="logout-form" action="{{ url('/logout') }}" method="POST">
             @csrf
-            <button type="submit" class="btn btn-danger">{{ __("lang.logout") }}</button>
-        </form> 
+            <button type="submit" class="btn btn-danger" style="background: none; border: none;">{{ __("lang.logout") }}</button>
+        </form>     
       @endauth
         
             
