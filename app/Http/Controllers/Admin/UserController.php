@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class UserController extends Controller
 {
@@ -12,8 +14,12 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::orderBy('id', 'desc')->get();
+        return view('admin.users.index', [
+            'users' => $users
+        ]);
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -36,15 +42,22 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+            //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
+
+    
     public function edit(string $id)
     {
-        //
+        $roles = Role::all();
+        $user = User::findOrFail($id); // قم بتغيير $users إلى $user لأنه مستخدم واحد
+        return view('admin.users.edit', [
+            'user' => $user,  // استخدام $user بدلاً من $users
+            'roles' => $roles
+        ]);
     }
 
     /**
@@ -52,7 +65,14 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $users = User::findOrFail($id);
+        $request ->validate([
+            'role_id' => 'required|exists:roles,id',
+            ]);
+            $users->update([
+                'role_id' => $request->input('role_id')
+            ]);
+            return redirect()->to('dashboard/users')->with('success', 'User updated successfully');
     }
 
     /**

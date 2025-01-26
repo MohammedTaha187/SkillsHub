@@ -7,6 +7,7 @@ use App\Http\Controllers\SkillController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\web\HomeController;
 use App\Http\Controllers\web\LangController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\admin\CatController as AdminCatController;
 use App\Http\Controllers\admin\ExamController as AdminExamController;
@@ -65,6 +66,14 @@ Route::middleware(['lang', 'auth'])->group(function () {
        Route::get('questions/edit/{id}', [QuestionController::class, 'edit']);
         Route::post('questions/update/{id}', [QuestionController::class, 'update']);
         Route::get('questions/delete/{id}', [QuestionController::class, 'delete']);
+
+        //admin users
+        Route::get('users', [UserController::class, 'index']);
+        Route::get('users/edit/{id}', [UserController::class, 'edit'])->middleware('isSuperadmin');
+        Route::post('users/update/{id}', [UserController::class, 'update'])->middleware('isSuperadmin');
+        Route::get('users/delete/{id}', [UserController::class, 'delete'])->middleware('isSuperadmin');
+
+
 
 
 
