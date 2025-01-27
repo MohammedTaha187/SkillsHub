@@ -32,7 +32,16 @@
 
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                    data-accordion="false">
+                    data-accordion="false"><li class="nav-item">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="nav-link" style="background: none; border: none;">
+                                <i class="fas fa-sign-out-alt nav-icon"></i>
+                                <p>Logout</p>
+                            </button>
+                        </form>
+                    </li>
+                    
 
                     <li class="nav-item">
                         <a href="{{ url("dashboard/categories") }}" class="nav-link">

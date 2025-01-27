@@ -86,5 +86,7 @@ return [
     'end_exam' => 'End Exam',
     'Submit' => 'Submit',
     'Cancel' => 'Cancel',
+    'Your Score' => 'Your Score',
+    'Go Back to Home' => 'Go Back to Home',
 
 ];

@@ -1,52 +1,55 @@
 @extends("layout")
-@section("title")
-    Questions
-@endsection
+@section("title", "Questions")
 @section("main")
-    <!-- Hero-area -->
     <div class="hero-area section">
-        <!-- Background Image -->
-        <div class="bg-image bg-parallax overlay" style="background-image:url({{ asset('img/blog-post-background.jpg') }})"></div>
+        <div class="bg-image bg-parallax overlay" style="background-image:url({{ asset("./img/blog-post-background.jpg") }})">
+        </div>
         <div class="container">
             <div class="row">
                 <div class="col-md-10 col-md-offset-1 text-center">
                     <ul class="hero-area-tree">
                         <li><a href="/">{{ __("lang.home") }}</a></li>
                         <li><a href="{{ url("/categories/show/" . $exam->skill->cat->id) }}">{{ $exam->skill->cat->name() }}</a></li>
-                        <li><a href="{{ url("/categories/show/" . $exam->skill->cat->id) }}">{{ $exam->skill->name() }}</a></li>
                         <li>{{ $exam->name() }}</li>
                     </ul>
                     <h1 class="white-text">{{ $exam->name() }}</h1>
-                    <ul class="blog-post-meta">
-                        <li>{{ Carbon\Carbon::parse($exam->created_at)->format("d M, Y ") }}</li>
-                        <li class="blog-meta-comments"><a href="#"><i class="fa fa-users"></i>{{ $exam->skill->getStudentCount() }}</a></li>
-                    </ul>
                 </div>
             </div>
         </div>
     </div>
-    <!-- /Hero-area -->
 
-    <!-- Blog -->
     <div id="blog" class="section">
         <div class="container">
             <div class="row">
-                <!-- main blog -->
                 <div id="main" class="col-md-9">
-                    <form action="">
+                    @if($timeRemaining > 0)
+                    <div class="alert alert-success text-center">
+                        <strong>Time Remaining:</strong>
+                        <span class="countdown-time" id="timeRemaining">{{ floor($timeRemaining / 60) }} minutes and {{ $timeRemaining % 60 }} seconds</span>
+                    </div>
+                    <button type="submit" class="main-button icon-button pull-left" id="submitButton">{{ __("lang.Submit") }}</button>
+                @else
+                    <div class="alert alert-danger text-center">
+                        <strong>Time's up!</strong>
+                    </div>
+                @endif
+
+                    <form action="{{ route("exams.submit", $exam->id) }}" method="POST" id="examForm">
                         @csrf
                         @foreach ($questions as $index => $question)
                             <div class="blog-post mb-5">
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
-                                        <h3 class="panel-title">{{ $index + 1 }}- {{ $question->title->en }}</h3>
+                                        <h3 class="panel-title">
+                                            {{ $question->title->{app()->getLocale()} }}
+                                        </h3>
                                     </div>
                                     <div class="panel-body">
-                                        @foreach (['option_1', 'option_2', 'option_3', 'option_4'] as $option)
+                                        @foreach (range(1, 4) as $i)
                                             <div class="radio">
                                                 <label>
-                                                    <input type="radio" name="question[{{ $question->id }}]" id="optionsRadios{{ $question->id . $loop->index }}" value="{{ $option }}">
-                                                    {{ is_object($question->$option) ? $question->$option->en : $question->$option }}
+                                                    <input type="radio" name="question[{{ $question->id }}]" value="{{ $i }}" class="questionAnswer">
+                                                    {{ $question->{"option_" . $i}->{app()->getLocale()} }}
                                                 </label>
                                             </div>
                                         @endforeach
@@ -54,32 +57,41 @@
                                 </div>
                             </div>
                         @endforeach
-                    </form>
-                    <div>
-                        <button class="main-button icon-button pull-left">{{ __("lang.Submit") }}</button>
-                        <button class="main-button icon-button btn-danger pull-left ml-sm">{{ __("lang.Cancel") }}</button>
-                    </div>
-                </div>
-                <!-- /main blog -->
 
-                <!-- aside blog -->
+                        <button type="submit" class="main-button icon-button pull-left" id="submitButton" disabled>{{ __("lang.Submit") }}</button>
+                    </form>
+                </div>
                 <div id="aside" class="col-md-3">
                     <ul class="list-group">
-                        <li class="list-group-item">{{ __("lang.Skill") }}: {{ $exam->skill->name() }} </li>
+                        <li class="list-group-item">{{ __("lang.Skill") }}: {{ $exam->skill->name() }}</li>
                         <li class="list-group-item">{{ __("lang.Questions") }}: {{ $exam->questions->count() }}</li>
                         <li class="list-group-item">{{ __("lang.Duration") }}: {{ $exam->duration_mins }} mins</li>
                         <li class="list-group-item">{{ __("lang.Difficulty") }}:
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star-o"></i>
-                            <i class="fa fa-star-o"></i>
+                            @for ($i = 1; $i <= $exam->difficulty; $i++)
+                                <i class="fa fa-star"></i>
+                            @endfor
                         </li>
                     </ul>
                 </div>
-                <!-- /aside blog -->
             </div>
         </div>
     </div>
-    <!-- /Blog -->
+
+    @section('scripts')
+    <script>
+        var timeRemaining = {{ $timeRemaining }};
+        var countdownInterval = setInterval(function() {
+            if (timeRemaining <= 0) {
+                clearInterval(countdownInterval);
+                document.getElementById('submitButton').disabled = false; // Enable submit button when time is up
+                document.getElementById('timeRemaining').innerText = "Time's up!";
+            } else {
+                timeRemaining--;
+                var minutes = Math.floor(timeRemaining / 60);
+                var seconds = timeRemaining % 60;
+                document.getElementById('timeRemaining').innerText = minutes + " minutes and " + seconds + " seconds";
+            }
+        }, 1000);
+    </script>
+    @endsection
 @endsection

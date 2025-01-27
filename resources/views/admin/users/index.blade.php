@@ -33,9 +33,19 @@
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                     data-accordion="false">
+                    <li class="nav-item">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="nav-link" style="background: none; border: none;">
+                                <i class="fas fa-sign-out-alt nav-icon"></i>
+                                <p>Logout</p>
+                            </button>
+                        </form>
+                    </li>
+                    
 
                     <li class="nav-item">
-                        <a href="{{ url('dashboard/categories') }}" class="nav-link">
+                        <a href="{{ url("dashboard/categories") }}" class="nav-link">
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>Categories</p>
                         </a>
@@ -67,7 +77,7 @@
                             <p>Users</p>
                         </a>
                     </li>
-                    
+
                 </ul>
             </nav>
         </div>
@@ -80,9 +90,14 @@
                     <div class="row">
                         <div class="col-md-12">
                             <h3 class="text-center mb-4">Users</h3>
-                            
+                            @if (session("error"))
+                                <div class="alert alert-danger">
+                                    {{ session("error") }}
+                                </div>
+                            @endif
                             <table class="table table-striped table-bordered table-hover">
                                 <thead class="thead-dark">
+
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
@@ -97,12 +112,14 @@
                                             <td>{{ $user->id }}</td>
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
-                                            <td>{{ $user->role ? $user->role->name : 'N/A' }}</td> <!-- Check if role exists -->
+                                            <td>{{ $user->role ? $user->role->name : "N/A" }}</td>
+                                            <!-- Check if role exists -->
                                             <td>
-                                                <a href="{{ url('dashboard/users/edit/' . $user->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                                <form action="{{ url('dashboard/users/delete/' . $user->id) }}" method="POST" style="display:inline;">
+                                                <a href="{{ url("dashboard/users/edit/" . $user->id) }}"
+                                                    class="btn btn-warning btn-sm">Edit</a>
+                                                <form action="{{ url("dashboard/users/delete/" . $user->id) }}"
+                                                    method="GET" style="display:inline;">
                                                     @csrf
-                                                    @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                                 </form>
                                             </td>
@@ -112,14 +129,11 @@
                             </table>
                         </div>
                     </div>
-                    
-                    
+
                 </div>
             </div>
         </div>
     </div>
-
-   
 
     <aside class="control-sidebar control-sidebar-dark">
         <div class="p-3">
@@ -130,17 +144,16 @@
 
     <script>
         function showSection(section) {
-    var sections = document.querySelectorAll('.section');
-    sections.forEach(function(sec) {
-        sec.style.display = 'none';
-    });
+            var sections = document.querySelectorAll('.section');
+            sections.forEach(function(sec) {
+                sec.style.display = 'none';
+            });
 
-    document.getElementById(section).style.display = 'block';
-}
+            document.getElementById(section).style.display = 'block';
+        }
 
-window.onload = function() {
-    showSection('users'); 
-};
-
+        window.onload = function() {
+            showSection('users');
+        };
     </script>
 @endsection

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exam;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreExamRequest;
 use App\Http\Requests\UpdateExamRequest;
+use Illuminate\Support\Facades\Log;
 
 class ExamController extends Controller
 {
@@ -13,7 +15,7 @@ class ExamController extends Controller
      */
     public function index()
     {
-        //
+
     }
 
     /**
@@ -21,7 +23,7 @@ class ExamController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -29,7 +31,7 @@ class ExamController extends Controller
      */
     public function store(StoreExamRequest $request)
     {
-        //
+
     }
 
     /**
@@ -37,29 +39,159 @@ class ExamController extends Controller
      */
     public function show($id)
     {
+
         $data['exams'] = Exam::findOrFail($id);
         $data['skill'] = $data['exams']->skill->paginate(6);
         return view('web.exams.index')->with($data);
     }
 
 
+
+
+
+
     public function questions($id)
     {
         $exam = Exam::findOrFail($id);
-        $questions = $exam->questions;
+        
+        // الحصول على الوقت المخزن في الجلسة
+        $startTime = session('exam_start_time');
+        $duration = session('exam_duration');
+        
+        Log::info("Start Time: " . $startTime);
+        Log::info("Duration: " . $duration);
+        
+        if ($startTime && $duration) {
+            $currentTime = time();
+            $timeRemaining = $duration - ($currentTime - $startTime);
+        
+            Log::info("Current Time: " . $currentTime);
+            Log::info("Time Remaining: " . $timeRemaining);
+        
+            if ($timeRemaining <= 0) {
+                $timeRemaining = 0;
+            }
+        } else {
+            $timeRemaining = 0;
+        }
     
-       
-        foreach ($questions as $question) {
+        $questions = $exam->questions->map(function ($question) {
             $question->title = json_decode($question->title);
             $question->option_1 = json_decode($question->option_1);
             $question->option_2 = json_decode($question->option_2);
             $question->option_3 = json_decode($question->option_3);
             $question->option_4 = json_decode($question->option_4);
-        }
+            $question->right_ans = json_decode($question->right_ans);
+            return $question;
+        });
     
-        return view('web.exams.questions', compact('exam', 'questions'));
+        return view('web.exams.questions', [
+            'exam' => $exam,
+            'questions' => $questions,
+            'timeRemaining' => $timeRemaining,
+        ]);
     }
     
+    
+
+
+
+
+
+
+    public function submit(Request $request, $examId)
+    {
+        $exam = Exam::findOrFail($examId);
+        $questions = $exam->questions;
+
+
+        foreach ($questions as $question) {
+            if (!isset($request->question[$question->id])) {
+                return back()->with('error', 'Please answer all the questions.');
+            }
+        }
+
+
+        $score = 0;
+
+        foreach ($questions as $question) {
+            $studentAnswer = $request->question[$question->id];
+
+            if ($studentAnswer == $question->right_ans) {
+                $score++;
+            }
+        }
+
+
+        return redirect()->route('exams.result', $examId)->with('score', $score);
+    }
+
+    public function startExam($examId)
+{
+    $exam = Exam::findOrFail($examId);
+
+    // تحويل المدة بالدقائق إلى ثواني
+    $duration = $exam->duration_mins * 60; 
+    $startTime = time(); // الوقت الحالي
+
+    // تخزين الوقت في الجلسة
+    session([
+        'exam_start_time' => $startTime,
+        'exam_duration' => $duration,
+    ]);
+
+    // سجل القيم للتحقق
+    Log::info('Exam Started: Start Time = ' . $startTime . ', Duration = ' . $duration);
+    Log::info('Session Start Time: ' . session('exam_start_time'));
+    Log::info('Session Duration: ' . session('exam_duration'));
+
+    return view('web.exams.exam', compact('exam', 'duration'));
+}
+
+    
+
+    
+    
+
+
+
+
+    public function showResult($examId)
+    {
+        $exam = Exam::findOrFail($examId);
+
+
+        $score = session('score');
+
+
+        $startTime = session('exam_start_time');
+        $duration = session('exam_duration');
+
+        if ($startTime && $duration) {
+            $currentTime = time();
+            $timeRemaining = $duration - ($currentTime - $startTime);
+
+            if ($timeRemaining <= 0) {
+                $timeRemaining = 0;
+            }
+        } else {
+            $timeRemaining = 0;
+        }
+
+        if ($score === null) {
+            return redirect()->route('exams.show', $examId)->with('error', 'Please complete the exam before viewing the results.');
+        }
+
+        return view('web.exams.result', [
+            'exam' => $exam,
+            'score' => $score,
+            'timeRemaining' => $timeRemaining,
+        ]);
+    }
+
+
+
+
 
 
     /**
@@ -67,7 +199,7 @@ class ExamController extends Controller
      */
     public function edit(Exam $exam)
     {
-        //
+
     }
 
     /**
@@ -75,7 +207,7 @@ class ExamController extends Controller
      */
     public function update(UpdateExamRequest $request, Exam $exam)
     {
-        //
+
     }
 
     /**
@@ -83,6 +215,6 @@ class ExamController extends Controller
      */
     public function destroy(Exam $exam)
     {
-        //
+
     }
 }

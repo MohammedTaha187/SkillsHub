@@ -84,6 +84,8 @@ return [
     'end_exam' => 'إنهاء الإمتحان',
     'Submit' => 'يُقدِّم',
     'Cancel' => 'يلغي',
+    'Your Score' => 'نتيجاتك',
+    'Go Back to Home' => 'عودة إلى الصفحة الرئيسية',
 
 
 

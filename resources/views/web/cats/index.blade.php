@@ -88,9 +88,13 @@
                     <div class="widget category-widget">
                         <h3>{{ __("lang.categories") }}</h3>
                         @foreach ($cats as $cat)
-                            <a class="category" href="{{ url("skills/show/$skill->id") }}">{{ $cat->name() }}
-                                <span>{{ $cat->skills()->count() }}</span></a>
-                        @endforeach
+    @foreach ($cat->skills as $skill) <!-- هنا نقوم بالتكرار عبر المهارات المرتبطة بالفئة -->
+        <a class="category" href="{{ url('skills/show/'.$skill->id) }}">{{ $cat->name() }}
+            <span>{{ $cat->skills()->count() }}</span>
+        </a>
+    @endforeach
+@endforeach
+
 
                     </div>
                     <!-- /category widget -->

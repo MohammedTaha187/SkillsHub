@@ -20,6 +20,6 @@ class IsSuperadmin
             return $next($request);
             }
     
-            return redirect(url ('dashboard/categories'));
+            return redirect()->back()->with('error', 'You do not have permission to perform this action.');
     }
 }

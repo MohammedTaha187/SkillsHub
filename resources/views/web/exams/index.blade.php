@@ -73,12 +73,10 @@
                         <li class="list-group-item">{{ __("lang.Skill") }}: {{ $exams->skill->name() }} </li>
                         <li class="list-group-item"> {{ __("lang.Questions") }}: {{ $exams->questions->count() }}</li>
                         <li class="list-group-item"> {{ __("lang.Duration") }}: {{ $exams->duration_mins }} mins</li>
-                        <li class="list-group-item"> {{ __("lang.Difficulty") }}:
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star-o"></i>
-                            <i class="fa fa-star-o"></i>
+                        <li class="list-group-item">{{ __("lang.Difficulty") }}:
+                            @for ($i = 1; $i <= $exams->difficulty; $i++)
+                                <i class="fa fa-star"></i>
+                            @endfor
                         </li>
                     </ul>
                     <!-- /exams details widget -->
