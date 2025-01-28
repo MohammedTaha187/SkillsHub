@@ -88,5 +88,8 @@ return [
     'Cancel' => 'Cancel',
     'Your Score' => 'Your Score',
     'Go Back to Home' => 'Go Back to Home',
+    'Remaining Time' => 'Remaining Time',
+    'minutes and' => 'minutes and',
+    'seconds' => 'seconds',
 
 ];

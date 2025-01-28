@@ -50,47 +50,34 @@ class ExamController extends Controller
 
 
 
-    public function questions($id)
-    {
-        $exam = Exam::findOrFail($id);
-        
-        // الحصول على الوقت المخزن في الجلسة
-        $startTime = session('exam_start_time');
-        $duration = session('exam_duration');
-        
-        Log::info("Start Time: " . $startTime);
-        Log::info("Duration: " . $duration);
-        
-        if ($startTime && $duration) {
-            $currentTime = time();
-            $timeRemaining = $duration - ($currentTime - $startTime);
-        
-            Log::info("Current Time: " . $currentTime);
-            Log::info("Time Remaining: " . $timeRemaining);
-        
-            if ($timeRemaining <= 0) {
-                $timeRemaining = 0;
-            }
-        } else {
-            $timeRemaining = 0;
-        }
+   
+public function questions($id)
+{
+    $exam = Exam::findOrFail($id);
+
     
-        $questions = $exam->questions->map(function ($question) {
-            $question->title = json_decode($question->title);
-            $question->option_1 = json_decode($question->option_1);
-            $question->option_2 = json_decode($question->option_2);
-            $question->option_3 = json_decode($question->option_3);
-            $question->option_4 = json_decode($question->option_4);
-            $question->right_ans = json_decode($question->right_ans);
-            return $question;
-        });
-    
-        return view('web.exams.questions', [
-            'exam' => $exam,
-            'questions' => $questions,
-            'timeRemaining' => $timeRemaining,
-        ]);
+    if (!session()->has("exam_start_time_$id")) {
+        session()->put("exam_start_time_$id", now());
     }
+
+    $questions = $exam->questions->map(function ($question) {
+        $question->title = json_decode($question->title);
+        $question->option_1 = json_decode($question->option_1);
+        $question->option_2 = json_decode($question->option_2);
+        $question->option_3 = json_decode($question->option_3);
+        $question->option_4 = json_decode($question->option_4);
+        $question->right_ans = json_decode($question->right_ans);
+        return $question;
+    });
+
+    return view('web.exams.questions', [
+        'exam' => $exam,
+        'questions' => $questions,
+        'start_time' => session("exam_start_time_$id"),
+        'duration' => $exam->duration_mins,
+    ]);
+}
+
     
     
 
@@ -99,48 +86,57 @@ class ExamController extends Controller
 
 
 
-    public function submit(Request $request, $examId)
-    {
-        $exam = Exam::findOrFail($examId);
-        $questions = $exam->questions;
+public function submit(Request $request, $examId)
+{
+    $exam = Exam::findOrFail($examId);
+    $questions = $exam->questions;
 
-
-        foreach ($questions as $question) {
-            if (!isset($request->question[$question->id])) {
-                return back()->with('error', 'Please answer all the questions.');
-            }
+    
+    foreach ($questions as $question) {
+        if (!isset($request->question[$question->id])) {
+            return back()->with('error', 'Please answer all the questions.');
         }
-
-
-        $score = 0;
-
-        foreach ($questions as $question) {
-            $studentAnswer = $request->question[$question->id];
-
-            if ($studentAnswer == $question->right_ans) {
-                $score++;
-            }
-        }
-
-
-        return redirect()->route('exams.result', $examId)->with('score', $score);
     }
+
+    $score = 0;
+
+    
+    foreach ($questions as $question) {
+        $studentAnswer = $request->question[$question->id];
+
+        
+        if (!session()->has("answer_$question->id")) {
+            session(["answer_$question->id" => $studentAnswer]); 
+        }
+
+        
+        if ($studentAnswer == $question->right_ans) {
+            $score++;
+        }
+    }
+
+    return redirect()->route('exams.result', $examId)->with('score', $score);
+}
+
+
+
+
 
     public function startExam($examId)
 {
     $exam = Exam::findOrFail($examId);
 
-    // تحويل المدة بالدقائق إلى ثواني
+    
     $duration = $exam->duration_mins * 60; 
-    $startTime = time(); // الوقت الحالي
+    $startTime = time(); 
 
-    // تخزين الوقت في الجلسة
+    
     session([
         'exam_start_time' => $startTime,
         'exam_duration' => $duration,
     ]);
 
-    // سجل القيم للتحقق
+    
     Log::info('Exam Started: Start Time = ' . $startTime . ', Duration = ' . $duration);
     Log::info('Session Start Time: ' . session('exam_start_time'));
     Log::info('Session Duration: ' . session('exam_duration'));

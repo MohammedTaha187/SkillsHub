@@ -86,6 +86,9 @@ return [
     'Cancel' => 'يلغي',
     'Your Score' => 'نتيجاتك',
     'Go Back to Home' => 'عودة إلى الصفحة الرئيسية',
+    'Remaining Time' => 'الزمن المتبقي',
+    'minutes and' => ' دقائق و',
+    'seconds' => 'ثواني',
 
 
 
