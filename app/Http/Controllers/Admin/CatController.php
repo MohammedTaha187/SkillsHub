@@ -15,11 +15,15 @@ class CatController extends Controller
     {
         $cats = Cat::orderBy('id', 'desc')->get();
         $cats = $cats->map(function ($cat) {
-            $cat->name = json_decode($cat->name);
+            if (is_string($cat->name)) {
+                $cat->name = json_decode($cat->name, true);
+            }
             return $cat;
         });
+
         return view('admin.cats.index', [
-            'cat' => $cats,
+            'cats' => $cats,
+
             'skill' =>[]
         ]);
     }

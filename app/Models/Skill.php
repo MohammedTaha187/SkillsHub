@@ -10,6 +10,9 @@ class Skill extends Model
 {
     use HasFactory;
     protected $guarded = ['id' , 'created_at' ,'updated_at '];
+    protected $skills = [
+        'name' => 'array',
+    ];
 
     public function cat(){
         return $this->belongsTo(Cat::class);
@@ -19,12 +22,16 @@ class Skill extends Model
         return $this->hasMany(Exam::class);
     }
 
-    public function name(){
+    public function name()
+{
+    $lang = app()->getLocale();
 
-        $lang = App::getLocale();
-        return json_decode($this->name)->$lang; 
-   
-    }
+
+    $name = is_array($this->name) ? $this->name : json_decode($this->name, true);
+
+    return $name[$lang] ?? $name['en'] ?? 'اسم غير متوفر';
+}
+
 
     public function getStudentCount(){
         $studentCount = 0;

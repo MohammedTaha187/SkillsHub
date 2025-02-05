@@ -13,7 +13,7 @@ class Exam extends Model
     protected $guarded = ['id' , 'created_at' ,'updated_at '];
 
     public function users(){
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot('score' ,  );
     }
 
     public function skill(){
@@ -26,17 +26,17 @@ class Exam extends Model
     public function name(){
 
         $lang = App::getLocale();
-        return json_decode($this->name)->$lang; 
-   
+        return json_decode($this->name)->$lang;
+
     }
 
     public function desc(){
 
         $lang = App::getLocale();
-        return json_decode($this->desc)->$lang; 
-   
+        return json_decode($this->desc)->$lang;
+
     }
-   
-    
-    
+
+
+
 }

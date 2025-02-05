@@ -35,7 +35,7 @@ class SkillController extends Controller
     public function create()
     {
         $cats = Cat::all()->map(function ($cat) {
-            $name = json_decode($cat->name, true);
+            $name = is_string($cat->name) ? json_decode($cat->name, true) : $cat->name;
             $cat->name = $name[app()->getLocale()] ?? $name['en'];
             return $cat;
         });

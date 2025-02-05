@@ -42,7 +42,7 @@
                             </button>
                         </form>
                     </li>
-                    
+
 
                     <li class="nav-item">
                         <a href="javascript:void(0);" class="nav-link" onclick="showSection('categories')">
@@ -108,11 +108,10 @@
                         </div>
 
                         <ul class="list-group">
-                            @foreach ($cat as $category)
+                            @foreach ($cats as $category)
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <span>{{ $category->name->ar }}</span>
-                                    <span>{{ $category->name->en }}</span>
-                                    <div class="btn-group">
+                                    <span>{{ $category->name['ar'] }}</span>
+                                    <span>{{ $category->name['en'] }}</span>                                    <div class="btn-group">
                                         <a href="{{ url("dashboard/categories/edit/" . $category->id) }}"
                                             class="btn btn-warning btn-sm">Edit</a>
                                         <form action="{{ url("dashboard/categories/delete/" . $category->id) }}"
